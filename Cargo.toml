@@ -1,15 +1,3 @@
-[workspace]
-members = [
-    ".",
-    "ffi",
-    "scrypt-ocl",
-    "initializer",
-    "profiler",
-    "service",
-    "certifier",
-    "k2pow-service",
-]
-
 [package]
 name = "post-rs"
 version = "0.8.5"
@@ -46,9 +34,6 @@ thread_local = "1.1.7"
 mockall = "0.13.1"
 core_affinity = "0.8.3"
 hex = "0.4.3"
-reqwest = { version = "0.12.15" }
-tokio = { version = "1.45.0", features = ["rt-multi-thread"]}
-futures = "0.3.31"
 
 [dev-dependencies]
 criterion = "0.5"
@@ -72,12 +57,3 @@ harness = false
 name = "verifying"
 harness = false
 
-[profile.release-clib]
-inherits = "release"
-strip = true
-lto = true
-rpath = true
-
-[profile.dev-clib]
-inherits = "dev"
-rpath = true

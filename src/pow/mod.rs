@@ -7,7 +7,6 @@
 //! without actually holding the whole POST data.
 
 pub mod randomx;
-pub mod service;
 use mockall::*;
 use std::ops::Range;
 use thiserror::Error;

@@ -1,3 +1,5 @@
+[workspace]
+
 [package]
 name = "space-time-proof"
 version = "0.1.0"
@@ -6,6 +8,14 @@ license = "MIT"
 description = "Proof of Space-Time proving and verification primitive"
 repository = "https://github.com/TickTockBent/space-time-proof"
 readme = "README.md"
+
+[features]
+default = []
+# Enable RandomX-backed proof-of-work for adversarial use cases.
+# Requires cmake at build time and pulls in the randomx-rs C dependency.
+# Without this feature, the library uses NullPowProver / NullPowVerifier
+# which are safe only for non-adversarial scenarios (see src/pow/null.rs).
+randomx = ["dep:randomx-rs"]
 
 [dependencies]
 aes = "0.8.4"
@@ -26,13 +36,11 @@ bitvec = "1.0.1"
 rayon = "1.10.0"
 rand = "0.8.5"
 log = "0.4.27"
-randomx-rs = { git = "https://github.com/spacemeshos/randomx-rs", rev = "d46bcd90e09428883e253b8203d6b311b0a07b91" }
-
+randomx-rs = { git = "https://github.com/spacemeshos/randomx-rs", rev = "d46bcd90e09428883e253b8203d6b311b0a07b91", optional = true }
 
 primitive-types = "0.13.1"
 thiserror = "2.0.12"
 thread_local = "1.1.7"
-mockall = "0.13.1"
 core_affinity = "0.8.3"
 hex = "0.4.3"
 
@@ -42,6 +50,7 @@ tempfile = "3.20.0"
 rand = "0.8.5"
 proptest = "1.6.0"
 rstest = "0.25.0"
+mockall = "0.13.1"
 
 [target.'cfg(not(windows))'.dev-dependencies]
 pprof = { version = "0.14.0", features = ["flamegraph", "criterion"] }

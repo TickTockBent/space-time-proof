@@ -1,3 +1,5 @@
+#![cfg(feature = "randomx")]
+
 use std::{borrow::Cow, sync::atomic::AtomicBool};
 
 use space_time_proof::{
@@ -44,17 +46,14 @@ fn test_generate_and_verify() {
     let pow_flags = RandomXFlag::get_recommended_flags();
     // Generate a proof
     let stop = AtomicBool::new(false);
-    let mut reporter = prove::MockProgressReporter::new();
-    reporter.expect_new_nonce_group().once().return_const(());
-    reporter.expect_finished_chunk().times(1..).return_const(());
-    let pow_prover = space_time_proof::pow::randomx::PoW::new(pow_flags).unwrap();
+    let reporter = prove::NoopProgressReporter {};
+    let pow_prover = space_time_proof::pow::randomx::PoW::new(pow_flags, b"test-cache-key").unwrap();
     let proof = generate_proof(
         datadir.path(),
         challenge,
         cfg,
         32,
         space_time_proof::config::Cores::Any(1),
-        pow_flags,
         stop,
         reporter,
         &pow_prover,
@@ -63,7 +62,7 @@ fn test_generate_and_verify() {
 
     // Verify the proof
     let metadata = ProofMetadata::new(metadata, *challenge);
-    let verifier = Verifier::new(Box::new(PoW::new(pow_flags).unwrap()));
+    let verifier = Verifier::new(Box::new(PoW::new(pow_flags, b"test-cache-key").unwrap()));
     verifier
         .verify(&proof, &metadata, &cfg, &init_cfg, Mode::All)
         .expect("proof should be valid");
@@ -147,14 +146,13 @@ fn test_generate_and_verify_difficulty_msb_not_zero() {
     let pow_flags = RandomXFlag::get_recommended_flags();
     // Generate a proof
     let stop = AtomicBool::new(false);
-    let pow_prover = space_time_proof::pow::randomx::PoW::new(pow_flags).unwrap();
+    let pow_prover = space_time_proof::pow::randomx::PoW::new(pow_flags, b"test-cache-key").unwrap();
     let proof = generate_proof(
         datadir.path(),
         challenge,
         cfg,
         32,
         space_time_proof::config::Cores::Any(1),
-        pow_flags,
         stop,
         prove::NoopProgressReporter {},
         &pow_prover,
@@ -163,7 +161,7 @@ fn test_generate_and_verify_difficulty_msb_not_zero() {
 
     // Verify the proof
     let metadata = ProofMetadata::new(metadata, *challenge);
-    let verifier = Verifier::new(Box::new(PoW::new(pow_flags).unwrap()));
+    let verifier = Verifier::new(Box::new(PoW::new(pow_flags, b"test-cache-key").unwrap()));
     verifier
         .verify(&proof, &metadata, &cfg, &init_cfg, Mode::All)
         .expect("proof should be valid");

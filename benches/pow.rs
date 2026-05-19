@@ -1,3 +1,5 @@
+#![cfg(feature = "randomx")]
+
 use criterion::{criterion_group, criterion_main, BatchSize, BenchmarkId, Criterion};
 
 use space_time_proof::pow::{

@@ -1,10 +1,11 @@
 [package]
-name = "post-rs"
-version = "0.8.5"
+name = "space-time-proof"
+version = "0.1.0"
 edition = "2021"
-
-[lib]
-name = "post"
+license = "MIT"
+description = "Proof of Space-Time proving and verification primitive"
+repository = "https://github.com/TickTockBent/space-time-proof"
+readme = "README.md"
 
 [dependencies]
 aes = "0.8.4"

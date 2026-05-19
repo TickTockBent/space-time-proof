@@ -1,7 +1,7 @@
 use std::sync::atomic::AtomicBool;
 
 use criterion::{criterion_group, criterion_main, Criterion};
-use post::{
+use space_time_proof::{
     config::{self, InitConfig, ProofConfig, ScryptParams},
     initialize::{CpuInitializer, Initialize},
     metadata::ProofMetadata,

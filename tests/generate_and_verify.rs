@@ -1,6 +1,6 @@
 use std::{borrow::Cow, sync::atomic::AtomicBool};
 
-use post::{
+use space_time_proof::{
     compression::{compress_indices, decompress_indexes, required_bits},
     config::{InitConfig, ScryptParams},
     initialize::{CpuInitializer, Initialize},

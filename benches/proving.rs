@@ -1,7 +1,7 @@
 use std::hint::black_box;
 
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
-use post::{pow, prove::Prover, prove::Prover8_56, prove::ProvingParams};
+use space_time_proof::{pow, prove::Prover, prove::Prover8_56, prove::ProvingParams};
 #[cfg(not(windows))]
 use pprof::criterion::{Output, PProfProfiler};
 use rand::{thread_rng, RngCore};

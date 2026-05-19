@@ -1,6 +1,6 @@
 use std::io::Write;
 
-use post::{
+use space_time_proof::{
     config::ScryptParams,
     initialize::{CpuInitializer, Initialize},
     pos_verification::verify_files,

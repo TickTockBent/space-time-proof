@@ -1,6 +1,6 @@
 use criterion::{criterion_group, criterion_main, BatchSize, BenchmarkId, Criterion};
 
-use post::pow::{
+use space_time_proof::pow::{
     randomx::{PoW, RandomXFlag},
     PowVerifier, Prover,
 };

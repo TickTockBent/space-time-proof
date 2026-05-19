@@ -17,7 +17,7 @@ fn test_generate_and_verify() {
     let challenge = b"hello world, challenge me!!!!!!!";
     let datadir = tempdir().unwrap();
 
-    let cfg = post::config::ProofConfig {
+    let cfg = space_time_proof::config::ProofConfig {
         k1: 23,
         k2: 32,
         pow_difficulty: [0xFF; 32],
@@ -47,13 +47,13 @@ fn test_generate_and_verify() {
     let mut reporter = prove::MockProgressReporter::new();
     reporter.expect_new_nonce_group().once().return_const(());
     reporter.expect_finished_chunk().times(1..).return_const(());
-    let pow_prover = post::pow::randomx::PoW::new(pow_flags).unwrap();
+    let pow_prover = space_time_proof::pow::randomx::PoW::new(pow_flags).unwrap();
     let proof = generate_proof(
         datadir.path(),
         challenge,
         cfg,
         32,
-        post::config::Cores::Any(1),
+        space_time_proof::config::Cores::Any(1),
         pow_flags,
         stop,
         reporter,
@@ -120,7 +120,7 @@ fn test_generate_and_verify_difficulty_msb_not_zero() {
     let challenge = b"hello world, challenge me!!!!!!!";
     let datadir = tempdir().unwrap();
 
-    let cfg = post::config::ProofConfig {
+    let cfg = space_time_proof::config::ProofConfig {
         k1: 20,
         k2: 30,
         pow_difficulty: [0xFF; 32],
@@ -147,13 +147,13 @@ fn test_generate_and_verify_difficulty_msb_not_zero() {
     let pow_flags = RandomXFlag::get_recommended_flags();
     // Generate a proof
     let stop = AtomicBool::new(false);
-    let pow_prover = post::pow::randomx::PoW::new(pow_flags).unwrap();
+    let pow_prover = space_time_proof::pow::randomx::PoW::new(pow_flags).unwrap();
     let proof = generate_proof(
         datadir.path(),
         challenge,
         cfg,
         32,
-        post::config::Cores::Any(1),
+        space_time_proof::config::Cores::Any(1),
         pow_flags,
         stop,
         prove::NoopProgressReporter {},

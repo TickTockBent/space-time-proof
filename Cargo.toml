@@ -21,7 +21,7 @@ randomx = ["dep:randomx-rs"]
 aes = "0.8.4"
 # Take a dependency on cipher to enable block-padding feature
 # as `aes` doesn't expose it.
-cipher = { version = "*", features = ["block-padding"] }
+cipher = { version = "0.4", features = ["block-padding"] }
 eyre = "0.6.12"
 regex = "1.11.1"
 itertools = "0.14.0"

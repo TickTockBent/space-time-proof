@@ -1,7 +1,7 @@
 use std::hint::black_box;
 
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
-use post::{pow, prove::Prover, prove::Prover8_56, prove::ProvingParams};
+use space_time_proof::{pow, prove::Prover, prove::Prover8_56, prove::ProvingParams};
 #[cfg(not(windows))]
 use pprof::criterion::{Output, PProfProfiler};
 use rand::{thread_rng, RngCore};
@@ -44,12 +44,7 @@ fn prover_bench(c: &mut Criterion) {
             ),
             &(nonces, threads),
             |b, &(nonces, threads)| {
-                let mut pow_prover = pow::MockProver::new();
-                pow_prover
-                    .expect_prove()
-                    .times(nonces as usize / 16)
-                    .returning(|_, _, _, _| Ok(0));
-                pow_prover.expect_par().returning(|| false);
+                let pow_prover = pow::NullPowProver;
                 let prover =
                     Prover8_56::new(CHALLENGE, 0..nonces, params, &pow_prover, &[7; 32]).unwrap();
                 b.iter(|| {

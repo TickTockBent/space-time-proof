@@ -6,6 +6,7 @@ use std::{
     path::Path,
 };
 
+#[cfg(test)]
 use mockall::automock;
 use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 use scrypt_jane::scrypt::scrypt;
@@ -28,7 +29,7 @@ pub struct VrfNonce {
     pub label: [u8; 32],
 }
 
-#[automock]
+#[cfg_attr(test, automock)]
 pub trait Initialize {
     #[allow(clippy::too_many_arguments)]
     fn initialize(

@@ -1,6 +1,8 @@
+#![cfg(feature = "randomx")]
+
 use criterion::{criterion_group, criterion_main, BatchSize, BenchmarkId, Criterion};
 
-use post::pow::{
+use space_time_proof::pow::{
     randomx::{PoW, RandomXFlag},
     PowVerifier, Prover,
 };
@@ -16,7 +18,7 @@ fn bench_pow(c: &mut Criterion) {
     ];
 
     let flags = RandomXFlag::get_recommended_flags();
-    let prover = PoW::new(flags).unwrap();
+    let prover = PoW::new(flags, b"bench-cache-key").unwrap();
 
     let mut group = c.benchmark_group("pow");
 
@@ -50,7 +52,7 @@ fn verify_pow_light_stateless(c: &mut Criterion) {
         b.iter_batched(
             rand::random,
             |pow| {
-                let prover = PoW::new(flags).unwrap();
+                let prover = PoW::new(flags, b"bench-cache-key").unwrap();
                 prover
                     .verify(pow, 7, b"challeng", &[0xFF; 32], &[7; 32])
                     .unwrap();
@@ -62,7 +64,7 @@ fn verify_pow_light_stateless(c: &mut Criterion) {
 
 fn verify_pow_light(c: &mut Criterion) {
     let flags = RandomXFlag::get_recommended_flags();
-    let prover = PoW::new(flags).unwrap();
+    let prover = PoW::new(flags, b"bench-cache-key").unwrap();
 
     c.bench_function("verify_pow_light", |b| {
         b.iter_batched(
@@ -79,7 +81,7 @@ fn verify_pow_light(c: &mut Criterion) {
 
 fn verify_pow_fast(c: &mut Criterion) {
     let flags = RandomXFlag::get_recommended_flags() | RandomXFlag::FLAG_FULL_MEM;
-    let prover = PoW::new(flags).unwrap();
+    let prover = PoW::new(flags, b"bench-cache-key").unwrap();
 
     c.bench_function("verify_pow_fast", |b| {
         b.iter_batched(

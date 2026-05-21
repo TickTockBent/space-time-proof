@@ -7,8 +7,6 @@ use thread_local::ThreadLocal;
 
 use super::{Error, PowVerifier, Prover};
 
-const RANDOMX_CACHE_KEY: &[u8] = b"spacemesh-randomx-cache-key";
-
 impl From<randomx_rs::RandomXError> for Error {
     fn from(e: randomx_rs::RandomXError) -> Self {
         Error::Internal(Box::new(e))
@@ -23,9 +21,9 @@ pub struct PoW {
 }
 
 impl PoW {
-    pub fn new(flags: RandomXFlag) -> Result<PoW, Error> {
+    pub fn new(flags: RandomXFlag, cache_key: &[u8]) -> Result<PoW, Error> {
         log::debug!("initializing RandomX");
-        let cache = RandomXCache::new(flags, RANDOMX_CACHE_KEY)?;
+        let cache = RandomXCache::new(flags, cache_key)?;
         let (cache, dataset) = if flags.contains(RandomXFlag::FLAG_FULL_MEM) {
             (None, Some(RandomXDataset::new(flags, cache, 0)?))
         } else {
@@ -97,7 +95,7 @@ impl Prover for PoW {
         _: &[u8; 32],
         _: &[u8; 32],
     ) -> Result<Vec<(u32, u64)>, Error> {
-        panic!("not implemented")
+        Err(Error::Unsupported)
     }
 
     fn par(&self) -> bool {
@@ -149,7 +147,7 @@ mod tests {
             0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
             0xff, 0xff, 0xff, 0xff,
         ];
-        let prover = PoW::new(RandomXFlag::get_recommended_flags()).unwrap();
+        let prover = PoW::new(RandomXFlag::get_recommended_flags(), b"test-cache-key").unwrap();
         let pow = prover
             .prove(nonce, challenge, difficulty, &[6; 32])
             .unwrap();
@@ -167,7 +165,7 @@ mod tests {
             0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
             0xff, 0xff, 0xff, 0xff,
         ];
-        let prover = PoW::new(RandomXFlag::get_recommended_flags()).unwrap();
+        let prover = PoW::new(RandomXFlag::get_recommended_flags(), b"test-cache-key").unwrap();
 
         let pool = rayon::ThreadPoolBuilder::new()
             .num_threads(1)
@@ -183,7 +181,7 @@ mod tests {
 
     #[test]
     fn reject_invalid_pow() {
-        let prover = PoW::new(RandomXFlag::get_recommended_flags()).unwrap();
+        let prover = PoW::new(RandomXFlag::get_recommended_flags(), b"test-cache-key").unwrap();
         // difficulty 0 is impossible to be met
         assert!(prover
             .verify(0, 0, b"challeng", &[0; 32], &[6; 32])

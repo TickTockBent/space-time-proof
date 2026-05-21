@@ -6,8 +6,14 @@
 //! at the same time. In effect a proof could be found
 //! without actually holding the whole POST data.
 
+pub mod null;
+
+#[cfg(feature = "randomx")]
 pub mod randomx;
-pub mod service;
+
+pub use null::{NullPowProver, NullPowVerifier};
+
+#[cfg(test)]
 use mockall::*;
 use std::ops::Range;
 use thiserror::Error;
@@ -18,11 +24,13 @@ pub enum Error {
     PoWNotFound,
     #[error("proof of work is invalid")]
     InvalidPoW,
+    #[error("operation not supported by this PoW backend")]
+    Unsupported,
     #[error(transparent)]
     Internal(Box<dyn std::error::Error + Send + Sync>),
 }
 
-#[automock]
+#[cfg_attr(test, automock)]
 pub trait Prover {
     fn prove(
         &self,
@@ -43,7 +51,7 @@ pub trait Prover {
     fn par(&self) -> bool;
 }
 
-#[automock]
+#[cfg_attr(test, automock)]
 pub trait PowVerifier {
     fn verify(
         &self,

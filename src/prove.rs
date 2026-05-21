@@ -20,9 +20,9 @@ use std::{collections::HashMap, ops::Range, path::Path, time::Instant};
 use aes::cipher::block_padding::NoPadding;
 use aes::cipher::BlockEncrypt;
 use eyre::Context;
+#[cfg(test)]
 use mockall::automock;
 use primitive_types::U256;
-use randomx_rs::RandomXFlag;
 use rayon::prelude::{ParallelBridge, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use serde_with::{base64::Base64, serde_as};
@@ -80,7 +80,7 @@ impl ProvingParams {
     }
 }
 
-#[automock]
+#[cfg_attr(test, automock)]
 pub trait ProgressReporter {
     fn new_nonce_group(&self, nonces: Range<u32>);
     fn finished_chunk(&self, position: u64, len: usize);
@@ -303,7 +303,6 @@ pub fn generate_proof<Reporter, Stopper>(
     cfg: ProofConfig,
     nonces_size: usize,
     cores: config::Cores,
-    pow_flags: RandomXFlag,
     stop: Stopper,
     reporter: Reporter,
     pow_prover: &(dyn pow::Prover + Send + Sync),
@@ -316,7 +315,7 @@ where
     let metadata = metadata::load(datadir).wrap_err("loading metadata")?;
     let params = ProvingParams::new(&metadata, &cfg)?;
     log::info!(
-        "generating proof with PoW flags: {pow_flags:?}, difficulty (scaled with SU): {}, K2PoW difficulty (scaled with SU): {}",
+        "generating proof with difficulty (scaled with SU): {}, K2PoW difficulty (scaled with SU): {}",
         params.difficulty,
         hex::encode_upper(params.pow_difficulty)
     );

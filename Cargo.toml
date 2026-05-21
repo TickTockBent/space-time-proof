@@ -1,22 +1,21 @@
 [workspace]
-members = [
-    ".",
-    "ffi",
-    "scrypt-ocl",
-    "initializer",
-    "profiler",
-    "service",
-    "certifier",
-    "k2pow-service",
-]
 
 [package]
-name = "post-rs"
-version = "0.8.5"
+name = "space-time-proof"
+version = "0.1.0"
 edition = "2021"
+license = "MIT"
+description = "Proof of Space-Time proving and verification primitive"
+repository = "https://github.com/TickTockBent/space-time-proof"
+readme = "README.md"
 
-[lib]
-name = "post"
+[features]
+default = []
+# Enable RandomX-backed proof-of-work for adversarial use cases.
+# Requires cmake at build time and pulls in the randomx-rs C dependency.
+# Without this feature, the library uses NullPowProver / NullPowVerifier
+# which are safe only for non-adversarial scenarios (see src/pow/null.rs).
+randomx = ["dep:randomx-rs"]
 
 [dependencies]
 aes = "0.8.4"
@@ -31,24 +30,19 @@ serde_json = "1.0.140"
 bytemuck = "1.23.0"
 serde_with = { version = "3.12.0", features = ["base64", "hex"] }
 
-scrypt-jane = { git = "https://github.com/spacemeshos/scrypt-jane-rs", branch = "main" }
+scrypt-jane = { git = "https://github.com/TickTockBent/scrypt-jane-rs", rev = "9e118d7" }
 blake3 = "1.8.2"
 bitvec = "1.0.1"
 rayon = "1.10.0"
 rand = "0.8.5"
 log = "0.4.27"
-randomx-rs = { git = "https://github.com/spacemeshos/randomx-rs", rev = "d46bcd90e09428883e253b8203d6b311b0a07b91" }
-
+randomx-rs = { git = "https://github.com/TickTockBent/randomx-rs", rev = "5e4adca", optional = true }
 
 primitive-types = "0.13.1"
 thiserror = "2.0.12"
 thread_local = "1.1.7"
-mockall = "0.13.1"
 core_affinity = "0.8.3"
 hex = "0.4.3"
-reqwest = { version = "0.12.15" }
-tokio = { version = "1.45.0", features = ["rt-multi-thread"]}
-futures = "0.3.31"
 
 [dev-dependencies]
 criterion = "0.5"
@@ -56,6 +50,7 @@ tempfile = "3.20.0"
 rand = "0.8.5"
 proptest = "1.6.0"
 rstest = "0.25.0"
+mockall = "0.13.1"
 
 [target.'cfg(not(windows))'.dev-dependencies]
 pprof = { version = "0.14.0", features = ["flamegraph", "criterion"] }
@@ -72,12 +67,3 @@ harness = false
 name = "verifying"
 harness = false
 
-[profile.release-clib]
-inherits = "release"
-strip = true
-lto = true
-rpath = true
-
-[profile.dev-clib]
-inherits = "dev"
-rpath = true

@@ -1,7 +1,9 @@
+#![cfg(feature = "randomx")]
+
 use std::sync::atomic::AtomicBool;
 
 use criterion::{criterion_group, criterion_main, Criterion};
-use post::{
+use space_time_proof::{
     config::{self, InitConfig, ProofConfig, ScryptParams},
     initialize::{CpuInitializer, Initialize},
     metadata::ProofMetadata,
@@ -44,14 +46,13 @@ fn verifying(c: &mut Criterion) {
     let pow_flags = RandomXFlag::get_recommended_flags();
     // Generate a proof
     let stop = AtomicBool::new(false);
-    let pow_prover = post::pow::randomx::PoW::new(pow_flags).unwrap();
+    let pow_prover = space_time_proof::pow::randomx::PoW::new(pow_flags, b"bench-cache-key").unwrap();
     let proof = generate_proof(
         datadir.path(),
         challenge,
         cfg,
         32,
         config::Cores::Any(1),
-        pow_flags,
         stop,
         NoopProgressReporter {},
         &pow_prover,
@@ -60,7 +61,7 @@ fn verifying(c: &mut Criterion) {
     let metadata = ProofMetadata::new(metadata, *challenge);
 
     // Bench verifying the proof
-    let verifier = Verifier::new(Box::new(PoW::new(pow_flags).unwrap()));
+    let verifier = Verifier::new(Box::new(PoW::new(pow_flags, b"bench-cache-key").unwrap()));
     c.bench_function("verify", |b| {
         b.iter(|| {
             verifier
